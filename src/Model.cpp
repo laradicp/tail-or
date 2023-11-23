@@ -56,6 +56,8 @@ Model::Model(string filename)
         sumX += x[i];
     }
     IloRange r = (sumX == data.getNbBeds());
+    r.setName("Total number of beds");
+    model.add(r);
 
     // respect capacity
     for(int i = 0; i < data.getNbFacilities(); i++)

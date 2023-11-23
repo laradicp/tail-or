@@ -8,12 +8,13 @@ Model::Model(string filename)
     env = IloEnv();
     model = IloModel(env);
     
-    // let Xi assume value 1 if facility i is selected, otherwise
-    x = IloBoolVarArray(env, data.getN());
+    // Xi corresponds to how many beds are allocated to facility i
+    x = IloNumVarArray(env, data.getNbFacilities(), 0, data.getNbBeds(), ILOINT);
     
     // add variable x to the model
-    for(int i = 0; i < data.getN(); i++)
+    for(int i = 0; i < data.getNbFacilities(); i++)
     {
+        x[i].setBounds(data.getLbBeds(i), data.getUbBeds(i));
         char name[100];
         sprintf(name, "X(%d)", i);
         x[i].setName(name);
@@ -21,13 +22,13 @@ Model::Model(string filename)
     }
     
     // Yij corresponds to the fraction of demand of customer j that is satisfied by facility i
-    y = IloArray<IloNumVarArray>(env, data.getN());
+    y = IloArray<IloNumVarArray>(env, data.getNbFacilities());
 
     // add variable y to the model
-    for(int i = 0; i < data.getN(); i++)
+    for(int i = 0; i < data.getNbFacilities(); i++)
     {
-        y[i] = IloNumVarArray(env, data.getM(), 0, 1, ILOFLOAT);
-        for(int j = 0; j < data.getM(); j++)
+        y[i] = IloNumVarArray(env, data.getNbRegions(), 0, 1, ILOFLOAT);
+        for(int j = 0; j < data.getNbRegions(); j++)
         {
             char name[100];
             sprintf(name, "Y(%d)(%d)", i, j);
@@ -38,26 +39,34 @@ Model::Model(string filename)
 
     // add objective function
     IloExpr obj(env);
-    for(int i = 0; i < data.getN(); i++)
+    for(int i = 0; i < data.getNbFacilities(); i++)
     {
-        for(int j = 0; j < data.getM(); j++)
+        for(int j = 0; j < data.getNbRegions(); j++)
         {
-            obj += data.getT(i, j)*y[i][j]*data.getD(j);
+            obj += data.getDistance(i, j)*data.getDemand(j)*y[i][j];
         }
     }
     model.add(IloMinimize(env, obj));
 
     // add constraints
+    // respect total number of beds
+    IloExpr sumX(env);
+    for(int i = 0; i < data.getNbFacilities(); i++)
+    {
+        sumX += x[i];
+    }
+    IloRange r = (sumX == data.getNbBeds());
+
     // respect capacity
-    for(int i = 0; i < data.getN(); i++)
+    for(int i = 0; i < data.getNbFacilities(); i++)
     {
         IloExpr sumY(env);
-        for(int j = 0; j < data.getM(); j++)
+        for(int j = 0; j < data.getNbRegions(); j++)
         {
-            sumY += y[i][j]*data.getD(j);
+            sumY += data.getDemand(j)*y[i][j];
         }
 
-        IloRange r = (sumY <= data.getK(i)*x[i]);
+        IloRange r = (sumY - x[i] <= 0);
         char name[100];
         sprintf(name, "Capacity(%d)", i);
         r.setName(name);
@@ -65,10 +74,10 @@ Model::Model(string filename)
     }
 
     // respect demand
-    for(int j = 0; j < data.getM(); j++)
+    for(int j = 0; j < data.getNbRegions(); j++)
     {
         IloExpr sumY(env);
-        for(int i = 0; i < data.getN(); i++)
+        for(int i = 0; i < data.getNbFacilities(); i++)
         {
             sumY += y[i][j];
         }

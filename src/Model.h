@@ -14,7 +14,7 @@ class Model
 
         IloEnv env;
         IloModel model;
-        IloBoolVarArray x;
+        IloNumVarArray x;
         IloArray<IloNumVarArray> y;
         
     public:

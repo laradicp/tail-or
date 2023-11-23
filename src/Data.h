@@ -11,25 +11,33 @@ class Data
 {
     private:
 
-        int n; // number of facilities / candidate cities for receiving hospital beds
-        int m; // number of customers / cities
+        int nbFacilities;
+        int nbRegions;
+        int nbBeds;
 
-        vector<int> k; // vector of capacities of each facility / number of hospital beds increased
-        vector<int> d; // vector of demands of each customer / percentage of city population
+        vector<int> lbBeds; // vector of lower bounds of beds of each facility
+        vector<int> ubBeds; // vector of upper bounds of beds of each facility
 
-        vector<vector<double>> t; // matrix of distances between facilities and customers / cities
+        vector<int> demand; // vector of demands of each region
+
+        vector<pair<double, double>> facilityCoordinates; // vector of coordinates of each facility
+        vector<pair<double, double>> regionCoordinates; // vector of coordinates of each region
+        vector<vector<double>> distance; // matrix of distances between facilities and regions
         
     public:
 
         Data(string filename);
 
-        int getN();
-        int getM();
+        int getNbFacilities();
+        int getNbRegions();
+        int getNbBeds();
 
-        int getK(int i);
-        int getD(int i);
+        int getLbBeds(int i);
+        int getUbBeds(int i);
 
-        double getT(int i, int j);
+        int getDemand(int j);
+
+        double getDistance(int i, int j);
         
 };
 

@@ -1,5 +1,6 @@
 #include "Data.h"
 #include <fstream>
+#include <math.h>
 
 Data::Data(string filename)
 {
@@ -8,31 +9,53 @@ Data::Data(string filename)
 
     if (file.is_open())
     {
-        file >> n >> m;
+        file >> nbFacilities;
+        file >> nbRegions;
+        file >> nbBeds;
 
-        k.resize(n);
-        d.resize(m);
-        t.resize(n);
+        lbBeds.resize(nbFacilities);
+        ubBeds.resize(nbFacilities);
 
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < nbFacilities; i++)
         {
-            file >> k[i];
+            file >> lbBeds[i];
+            file >> ubBeds[i];
         }
 
-        for (int i = 0; i < m; i++)
+        demand.resize(nbRegions);
+
+        for (int j = 0; j < nbRegions; j++)
         {
-            file >> d[i];
+            file >> demand[j];
         }
 
-        for (int i = 0; i < n; i++)
-        {
-            t[i].resize(m);
+        facilityCoordinates.resize(nbFacilities);
+        regionCoordinates.resize(nbRegions);
 
-            for (int j = 0; j < m; j++)
+        for (int i = 0; i < nbFacilities; i++)
+        {
+            file >> facilityCoordinates[i].first;
+            file >> facilityCoordinates[i].second;
+        }
+
+        for (int j = 0; j < nbRegions; j++)
+        {
+            file >> regionCoordinates[j].first;
+            file >> regionCoordinates[j].second;
+        }
+
+        distance.resize(nbFacilities);
+
+        for (int i = 0; i < nbFacilities; i++)
+        {
+            distance[i].resize(nbRegions);
+            for (int j = 0; j < nbRegions; j++)
             {
-                file >> t[i][j];
+                distance[i][j] = sqrt(pow(facilityCoordinates[i].first - regionCoordinates[j].first, 2) + pow(facilityCoordinates[i].second - regionCoordinates[j].second, 2));
             }
         }
+
+        file.close();   
     }
     else
     {
@@ -40,27 +63,37 @@ Data::Data(string filename)
     }
 }
 
-int Data::getN()
+int Data::getNbFacilities()
 {
-    return n;
+    return nbFacilities;
 }
 
-int Data::getM()
+int Data::getNbRegions()
 {
-    return m;
+    return nbRegions;
 }
 
-int Data::getK(int i)
+int Data::getNbBeds()
 {
-    return k[i];
+    return nbBeds;
 }
 
-int Data::getD(int i)
+int Data::getLbBeds(int i)
 {
-    return d[i];
+    return lbBeds[i];
 }
 
-double Data::getT(int i, int j)
+int Data::getUbBeds(int i)
 {
-    return t[i][j];
+    return ubBeds[i];
+}
+
+int Data::getDemand(int j)
+{
+    return demand[j];
+}
+
+double Data::getDistance(int i, int j)
+{
+    return distance[i][j];
 }

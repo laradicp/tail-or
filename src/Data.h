@@ -26,6 +26,8 @@ class Data
         
     public:
 
+        Data(){};
+
         Data(string filename);
 
         int getNbFacilities();

@@ -42,7 +42,7 @@ Data::Data(string filename)
             distance[i].resize(nbRegions);
             for (int j = 0; j < nbRegions; j++)
             {
-                distance[i][j] = sqrt(pow(facilityCoordinates[i].first - regionCoordinates[j].first, 2) + pow(facilityCoordinates[i].second - regionCoordinates[j].second, 2));
+                distance[i][j] = 111.11*sqrt(pow(facilityCoordinates[i].first - regionCoordinates[j].first, 2) + pow(facilityCoordinates[i].second - regionCoordinates[j].second, 2));
             }
         }
 

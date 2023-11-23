@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <ilcplex/ilocplex.h>
+#include "Data.h"
 
 using namespace std;
 
@@ -16,6 +17,9 @@ class Model
         IloModel model;
         IloNumVarArray x;
         IloArray<IloNumVarArray> y;
+        // IloNumVar z;
+
+        Data data;
         
     public:
     

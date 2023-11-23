@@ -1,9 +1,8 @@
 #include "Model.h"
-#include "Data.h"
 
 Model::Model(string filename)
 {
-    Data data = Data(filename);
+    data = Data(filename);
     
     env = IloEnv();
     model = IloModel(env);
@@ -21,13 +20,13 @@ Model::Model(string filename)
         model.add(x[i]);
     }
     
-    // Yij corresponds to the fraction of demand of customer j that is satisfied by facility i
+    // Yij corresponds to the number of customers in j that are assigned to facility i
     y = IloArray<IloNumVarArray>(env, data.getNbFacilities());
 
     // add variable y to the model
     for(int i = 0; i < data.getNbFacilities(); i++)
     {
-        y[i] = IloNumVarArray(env, data.getNbRegions(), 0, 1, ILOFLOAT);
+        y[i] = IloNumVarArray(env, data.getNbRegions(), 0, data.getDemand(i), ILOINT);
         for(int j = 0; j < data.getNbRegions(); j++)
         {
             char name[100];
@@ -36,6 +35,27 @@ Model::Model(string filename)
             model.add(y[i][j]);
         }
     }
+
+    // // Z is the maximum value of distance*y
+    // z = IloNumVar(env, 0, IloInfinity, ILOFLOAT);
+
+    // // add objective function
+    // IloExpr obj(env);
+    // model.add(IloMinimize(env, z));
+
+    // // add constraints
+    // // define z
+    // for(int i = 0; i < data.getNbFacilities(); i++)
+    // {
+    //     for(int j = 0; j < data.getNbRegions(); j++)
+    //     {
+    //         IloRange r = (z - data.getDistance(i, j)*y[i][j] >= 0);
+    //         char name[100];
+    //         sprintf(name, "Maximum distance(%d)(%d)", i, j);
+    //         r.setName(name);
+    //         model.add(r);
+    //     }
+    // }
 
     // add objective function
     IloExpr obj(env);
@@ -48,7 +68,6 @@ Model::Model(string filename)
     }
     model.add(IloMinimize(env, obj));
 
-    // add constraints
     // respect total number of beds
     IloExpr sumX(env);
     for(int i = 0; i < data.getNbFacilities(); i++)
@@ -65,7 +84,7 @@ Model::Model(string filename)
         IloExpr sumY(env);
         for(int j = 0; j < data.getNbRegions(); j++)
         {
-            sumY += data.getDemand(j)*y[i][j];
+            sumY += y[i][j];
         }
 
         IloRange r = (sumY - x[i] <= 0);
@@ -84,7 +103,7 @@ Model::Model(string filename)
             sumY += y[i][j];
         }
 
-        IloRange r = (sumY == 1);
+        IloRange r = (sumY == data.getDemand(j));
         char name[100];
         sprintf(name, "Demand(%d)", j);
         r.setName(name);
@@ -106,6 +125,21 @@ void Model::solve()
         {
             cout << "Solution status: " << cplex.getStatus() << endl;
             cout << "Objective value: " << cplex.getObjValue() << endl;
+            // int nbVulnerableCustomers = 0;
+            // for(int i = 0; i < data.getNbFacilities(); i++)
+            // {
+            //     for(int j = 0; j < data.getNbRegions(); j++)
+            //     {
+            //         if(data.getDistance(i, j)*cplex.getValue(y[i][j]) + 0.05 >= cplex.getObjValue())
+            //         {
+            //             cout << "Maximum distance: " << data.getDistance(i, j) << endl;
+            //             cout << "Demand: " << cplex.getValue(y[i][j]) << endl;
+            //             nbVulnerableCustomers += cplex.getValue(y[i][j]);
+            //         }
+                        
+            //     }
+            // }
+            // cout << "Number of vulnerable customers: " << nbVulnerableCustomers << endl;
         }
         else
         {

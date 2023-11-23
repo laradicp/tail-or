@@ -63,7 +63,7 @@ Model::Model(string filename)
     {
         for(int j = 0; j < data.getNbRegions(); j++)
         {
-            obj += data.getDistance(i, j)*data.getDemand(j)*y[i][j];
+            obj += data.getDistance(i, j)*y[i][j];
         }
     }
     model.add(IloMinimize(env, obj));

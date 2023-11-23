@@ -15,31 +15,22 @@ Data::Data(string filename)
 
         lbBeds.resize(nbFacilities);
         ubBeds.resize(nbFacilities);
+        facilityCoordinates.resize(nbFacilities);
 
         for (int i = 0; i < nbFacilities; i++)
         {
             file >> lbBeds[i];
             file >> ubBeds[i];
-        }
-
-        demand.resize(nbRegions);
-
-        for (int j = 0; j < nbRegions; j++)
-        {
-            file >> demand[j];
-        }
-
-        facilityCoordinates.resize(nbFacilities);
-        regionCoordinates.resize(nbRegions);
-
-        for (int i = 0; i < nbFacilities; i++)
-        {
             file >> facilityCoordinates[i].first;
             file >> facilityCoordinates[i].second;
         }
 
+        demand.resize(nbRegions);
+        regionCoordinates.resize(nbRegions);
+
         for (int j = 0; j < nbRegions; j++)
         {
+            file >> demand[j];
             file >> regionCoordinates[j].first;
             file >> regionCoordinates[j].second;
         }

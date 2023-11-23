@@ -20,9 +20,7 @@ class Data
 
         vector<int> demand; // vector of demands of each region
 
-        vector<pair<double, double>> facilityCoordinates; // vector of coordinates of each facility
-        vector<pair<double, double>> regionCoordinates; // vector of coordinates of each region
-        vector<vector<double>> distance; // matrix of distances between facilities and regions
+        vector<vector<int>> distance; // matrix of distances between facilities and regions
         
     public:
 
@@ -39,7 +37,7 @@ class Data
 
         int getDemand(int j);
 
-        double getDistance(int i, int j);
+        int getDistance(int i, int j);
         
 };
 

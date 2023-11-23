@@ -15,24 +15,18 @@ Data::Data(string filename)
 
         lbBeds.resize(nbFacilities);
         ubBeds.resize(nbFacilities);
-        facilityCoordinates.resize(nbFacilities);
-
+        
         for (int i = 0; i < nbFacilities; i++)
         {
             file >> lbBeds[i];
             file >> ubBeds[i];
-            file >> facilityCoordinates[i].first;
-            file >> facilityCoordinates[i].second;
         }
 
         demand.resize(nbRegions);
-        regionCoordinates.resize(nbRegions);
 
         for (int j = 0; j < nbRegions; j++)
         {
             file >> demand[j];
-            file >> regionCoordinates[j].first;
-            file >> regionCoordinates[j].second;
         }
 
         distance.resize(nbFacilities);
@@ -42,7 +36,7 @@ Data::Data(string filename)
             distance[i].resize(nbRegions);
             for (int j = 0; j < nbRegions; j++)
             {
-                distance[i][j] = 111.11*sqrt(pow(facilityCoordinates[i].first - regionCoordinates[j].first, 2) + pow(facilityCoordinates[i].second - regionCoordinates[j].second, 2));
+                file >> distance[i][j];
             }
         }
 
@@ -84,7 +78,7 @@ int Data::getDemand(int j)
     return demand[j];
 }
 
-double Data::getDistance(int i, int j)
+int Data::getDistance(int i, int j)
 {
     return distance[i][j];
 }

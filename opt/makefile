@@ -50,12 +50,12 @@ OBJS = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))
 #############################
 
 #### regra principal, gera o executavel
-cap-flp.bin: $(OBJS)
+opt.bin: $(OBJS)
 	@echo  "\033[31m \nLinking all objects files: \033[0m"
 	$(CPPC) $(BITS_OPTION) $(OBJS) -o $@ $(CCLNFLAGS)
 ############################
 
-all: mkdir_obj cap-flp.bin
+all: mkdir_obj opt.bin
 
 # Create the "obj" directory
 mkdir_obj:
@@ -79,5 +79,5 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 #delete objetos e arquivos de dependencia
 clean:
 	@echo "\033[31mcleaning obj directory \033[0m"
-	@rm -f $(OBJDIR)/*.o $(OBJDIR)/*.d cap-flp.bin
+	@rm -f $(OBJDIR)/*.o $(OBJDIR)/*.d opt.bin
 rebuild: clean all

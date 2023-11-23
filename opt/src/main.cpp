@@ -7,7 +7,7 @@ int main(int argc, char** argv)
 {
     if(argc != 2)
     {
-        cout << "Correct usage: ./cap-flp.bin <path>" << endl;
+        cout << "Correct usage: ./opt.bin <path>" << endl;
         exit(1);
     }
 
